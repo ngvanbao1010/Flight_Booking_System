@@ -1,0 +1,550 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Lịch Chuyến Bay{% endblock %}
+
+{% block content %}
+<h1 class="text-center text-primary mt-4">LỊCH CHUYẾN BAY</h1>
+
+<form id="scheduleForm" action="/schedule" method="POST">
+    <!-- Mã chuyến bay -->
+    <div class="row mb-4 border p-3">
+        <div class="col-md-12">
+            <label for="flight_id" class="font-weight-bold mb-2">Mã chuyến bay</label>
+            <select class="form-control" id="flight_id" name="flight_code" onchange="fetchFlightSchedule(this.value)"
+                    required>
+                <option value="" disabled selected>Chọn mã chuyến bay</option>
+                {% for f in flightcodes %}
+                <option value="{{ f }}">{{f}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Thông tin sân bay -->
+    <div class="row border p-3 mb-4">
+        <!-- Sân bay đi -->
+        <div class="col-md-6">
+            <label for="dep_airport" class="form-label font-weight-bold">Sân bay đi</label>
+            <select class="form-select" id="dep_airport" name="dep_airport">
+                <option value="" disabled selected>Chọn sân bay</option>
+            </select>
+        </div>
+        <!-- Sân bay đến -->
+        <div class="col-md-6">
+            <label for="des_airport" class="form-label font-weight-bold">Sân bay đến</label>
+            <select class="form-select" id="des_airport" name="des_airport" onchange="fetchSeat()">
+                <option value="" disabled selected>Chọn sân bay</option>
+            </select>
+        </div>
+
+        <!-- Thời gian khởi hành -->
+        <div class="row mb-3 mt-3">
+            <!-- Thời gian khởi hành -->
+            <div class="col-md-6"> <!-- Chiếm 8 cột trên màn hình lớn -->
+                <label class="font-weight-bold mb-3">Thời gian khởi hành</label>
+                <div class="row">
+                    <div class="col-md-4 d-flex align-items-center">
+                        <label for="date" class="form-label font-weight-bold" style="margin-right: 10px;">Ngày:</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                    <!-- Giờ -->
+                    <div class="col-md-4 d-flex align-items-center">
+                        <label for="hour" class="form-label font-weight-bold   "
+                               style="margin-right: 10px;">Giờ:</label>
+                        <input type="number" class="form-control" id="hour" name="hour" min="0" max="23"
+                               value="" placeholder="Giờ" required>
+                    </div>
+
+                    <!-- Phút -->
+                    <div class="col-md-4 d-flex align-items-center">
+                        <label for="minute" class="form-label font-weight-bold  "
+                               style="margin-right: 10px;">Phút:</label>
+                        <input type="number" class="form-control" id="minute" name="minute" min="0" max="59"
+                               placeholder="Phút" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thời gian bay -->
+            <div class="col-md-6"> <!-- Chiếm 4 cột trên màn hình lớn -->
+                <label class="font-weight-bold mb-3">Thời gian bay</label>
+                <div class="row">
+                    <!-- Giờ -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <label for="flight_hour" class="form-label font-weight-bold"
+                        >Giờ:</label>
+                        <input type="number" class="form-control" id="flight_hour" name="flight_hour" min="0"
+                               max="23"
+                               placeholder="Giờ" required>
+                    </div>
+
+                    <!-- Phút -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <label for="flight_minute" class="form-label font-weight-bold"
+                               style="margin-right: 10px;">Phút:</label>
+                        <input type="number" class="form-control" id="flight_minute" name="flight_minute" min="0"
+                               max="59" placeholder="Phút" required>
+                    </div>
+                </div>
+            </div>
+            <!-- Số ghế thương gia -->
+            <div class="col-md-3 mb-3 mt-3">
+                <label class="font-weight-bold mb-2">Số ghế thương gia</label>
+                <input type="number" class="form-control" name="bussiness_seats" id="first_class_seats"
+                       placeholder="Nhập số ghế thương gia"
+                       value="" min="0" max="">
+            </div>
+            <div class="col-md-3 mb-3 mt-3">
+                <label class="font-weight-bold mb-2">Giá ghế thương gia</label>
+                <input type="number" class="form-control" name="bussiness_seats" id="first_class_price"
+                       placeholder="Nhập số tiền"
+                       value="" min="0" max="">
+            </div>
+            <!-- Số ghế phổ thông -->
+            <div class="col-md-3 mb-3 mt-3">
+                <label class="font-weight-bold mb-2">Số ghế phổ thông</label>
+                <input type="number" class="form-control" name="ecnomic_seats" id="second_class_seats"
+                       placeholder="Nhập số ghế phổ thông"
+                       value=""
+                       min="0" max="">
+            </div>
+            <div class="col-md-3 mb-3 mt-3">
+                <label class="font-weight-bold mb-2">Giá ghế phổ thông</label>
+                <input type="number" class="form-control" name="ecnomic_seats" id="second_class_price"
+                       placeholder="Nhập số tiền"
+                       value=""
+                       min="0" max="">
+            </div>
+        </div>
+
+        <!-- Sân bay trung gian -->
+        <h4 class="mt-4 font-weight-bold">Sân bay trung gian</h4>
+
+        <!-- Checkbox để bật/tắt nhập liệu sân bay trung gian -->
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="enableTransit" onclick="toggleTransitFields()">
+            <label class="form-check-label" for="enableTransit">
+                Thêm sân bay trung gian
+            </label>
+        </div>
+
+        <!-- Bảng sân bay trung gian, ban đầu ẩn -->
+        <table class="table table-bordered" id="transitTable" style="display:none;">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Sân bay trung gian</th>
+                <th>Thời gian dừng</th>
+                <th>Ghi chú</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>
+                    <div class="col-md-12">
+                        <select class="form-select" id="imediateairport1" name="imediateairport1">
+                            <option value="" disabled selected>Chọn sân bay</option>
+                            {% for a in airports %}
+                            <option value="{{ a.id }}">{{a.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-12"> <!-- Chiếm 4 cột trên màn hình lớn -->
+                        <div class="row">
+                            <!-- Giờ -->
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label for="flight_stop_hour_one" class="form-label font-weight-bold"
+                                       style="margin-right: 10px;">Giờ:</label>
+                                <input type="number" class="form-control" id="flight_stop_hour_one"
+                                       name="flight_stop_hour_one"
+                                       min="0"
+                                       max="23"
+                                       placeholder="Giờ" required>
+                            </div>
+
+                            <!-- Phút -->
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label for="flight_stop_minute_one" class="form-label font-weight-bold"
+                                       style="margin-right: 10px;">Phút:</label>
+                                <input type="number" class="form-control" id="flight_stop_minute_one"
+                                       name="flight_stop_minute_one"
+                                       min="0"
+                                       max="59" placeholder="Phút" required>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="note_1" placeholder="Ghi chú" id="note_1"></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>
+                    <div class="col-md-12">
+                        <select class="form-select" id="imediateairport2" name="imediateairport2">
+                            <option value="" disabled selected>Chọn sân bay</option>
+                            {% for a in airports %}
+                            <option value="{{ a.id }}">{{a.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-12"> <!-- Chiếm 4 cột trên màn hình lớn -->
+                        <div class="row">
+                            <!-- Giờ -->
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label for="flight_stop_hour_two" class="form-label font-weight-bold"
+                                       style="margin-right: 10px;">Giờ:</label>
+                                <input type="number" class="form-control" id="flight_stop_hour_two"
+                                       name="flight_stop_hour_two"
+                                       min="0"
+                                       max="23"
+                                       placeholder="Giờ" required>
+                            </div>
+
+                            <!-- Phút -->
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label for="flight_stop_minute_two" class="form-label font-weight-bold"
+                                       style="margin-right: 10px;">Phút:</label>
+                                <input type="number" class="form-control" id="flight_stop_minute_two"
+                                       name="flight_stop_minute_two"
+                                       min="0"
+                                       max="59" placeholder="Phút" required>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="note_2" placeholder="Ghi chú" id="note_2"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Nút xác nhận -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-danger btn-lg" onclick="confirm()">Xác nhận lập lịch</button>
+        </div>
+</form>
+<script>
+
+
+// Hiện sân bay trung gian
+   function toggleTransitFields() {
+   const checkbox = document.getElementById('enableTransit');
+   const transitTable = document.getElementById('transitTable');
+
+   // Kiểm tra trạng thái của checkbox
+   if (checkbox.checked) {
+       transitTable.style.display = 'table'; // Hiển thị bảng
+   } else {
+       transitTable.style.display = 'none'; // Ẩn bảng
+   }
+}
+
+   // Xử lí không thể chọn trùng lập sân bay
+document.addEventListener("DOMContentLoaded", function () {
+   // Lấy các phần tử input
+   const depAirport = document.getElementById("dep_airport");
+   const desAirport = document.getElementById("des_airport");
+   const immediateAirport1 = document.getElementById("imediateairport1");
+   const immediateAirport2 = document.getElementById("imediateairport2");
+
+   if (depAirport && desAirport && immediateAirport1 && immediateAirport2) {
+       function updateOptions() {
+           const depValue = depAirport.value;
+           const desValue = desAirport.value;
+           const immediateValue1 = immediateAirport1.value;
+           const immediateValue2 = immediateAirport2.value;
+
+           // Hiện tất cả các tùy chọn trước khi áp dụng ẩn
+           [depAirport, desAirport, immediateAirport1, immediateAirport2].forEach(dropdown => {
+               for (let option of dropdown.options) {
+                   option.style.display = 'block';
+               }
+           });
+
+           // Ẩn các tùy chọn trùng với giá trị đã chọn ở các dropdown khác
+           [depAirport, desAirport, immediateAirport1, immediateAirport2].forEach(dropdown => {
+               for (let option of dropdown.options) {
+                   if (
+                       (dropdown !== depAirport && option.value === depValue) ||
+                       (dropdown !== desAirport && option.value === desValue) ||
+                       (dropdown !== immediateAirport1 && option.value === immediateValue1) ||
+                       (dropdown !== immediateAirport2 && option.value === immediateValue2)
+                   ) {
+                       option.style.display = 'none';
+                   }
+               }
+           });
+       }
+
+       // Thêm sự kiện thay đổi cho từng dropdown
+       [depAirport, desAirport, immediateAirport1, immediateAirport2].forEach(dropdown => {
+           dropdown.addEventListener("change", updateOptions);
+       });
+
+       // Gọi hàm cập nhật ngay khi trang tải xong
+       updateOptions();
+   }
+});
+
+function fetchFlightSchedule(code) {
+    fetch(`/api/schedule/${code}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+
+            const depAirportSelect = document.getElementById('dep_airport');
+            const desAirportSelect = document.getElementById('des_airport');
+
+            // Xóa các lựa chọn cũ
+            depAirportSelect.innerHTML = '<option value="" disabled selected>Chọn sân bay</option>';
+            desAirportSelect.innerHTML = '<option value="" disabled selected>Chọn sân bay</option>';
+
+            // Thêm các sân bay đi và đến
+            data.flights.forEach(flight => {
+                // Sân bay đi
+                const depOption = document.createElement('option');
+                depOption.value = flight.dep_airport.id;
+                depOption.textContent = flight.dep_airport.name;
+                depAirportSelect.appendChild(depOption);
+
+                // Sân bay đến
+                const desOption = document.createElement('option');
+                desOption.value = flight.des_airport.id;
+                desOption.textContent = flight.des_airport.name;
+                desAirportSelect.appendChild(desOption);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching flight schedule:", error);
+        });
+}
+
+
+
+function fetchSeat() {
+    const flight_code = document.getElementById('flight_id').value;
+    const dep_airport = document.getElementById('dep_airport').value;
+    const des_airport = document.getElementById('des_airport').value;
+    console.log(flight_code)
+    console.log(dep_airport)
+    console.log(des_airport)
+
+    // Kiểm tra thông tin đầu vào
+    if (!flight_code || !dep_airport || !des_airport) {
+        alert("Vui lòng nhập đầy đủ mã chuyến bay, sân bay đi và sân bay đến.");
+        return;
+    }
+
+    // Gửi yêu cầu GET đến Flask API
+    fetch(`/api/schedule/${flight_code}/${dep_airport}/${des_airport}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Có lỗi xảy ra khi gọi API.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                // Cập nhật giá trị max cho các trường input
+                document.getElementById('second_class_seats').max = data.second_class_seat;
+                document.getElementById('second_class_seats').value = data.second_class_seat;
+                document.getElementById('first_class_seats').max = data.first_class_seat;
+                document.getElementById('first_class_seats').value = data.first_class_seat;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Không tìm thấy thông tin chuyến bay hoặc có lỗi xảy ra.');
+        });
+}
+
+
+
+function checkHour(hour) {
+   if (hour < 0 || hour >= 24) {
+       alert("Giờ không được nhỏ hơn 0 hoặc lớn hơn 23");
+       return false;
+   }
+   return true;
+}
+
+function checkMinute(minute) {
+   if (minute < 0 || minute >= 60) {
+       alert("Phút không được nhỏ hơn 0 hoặc lớn hơn 59");
+       return false;
+   }
+   return true;
+}
+
+function checkTime(date, hour, minute) {
+   if(!date){
+        return false;
+   }
+   if (!checkHour(hour)) {
+       return false;
+   }
+   if (!checkMinute(minute)) {
+       return false;
+   }
+   return true;
+}
+
+// Hàm định dạng ngày giờ
+function formatDateTime(date, hour, minute) {
+    // Tạo đối tượng Date từ ngày, giờ và phút
+    const formattedDate = new Date(date);
+    formattedDate.setHours(hour, minute, 0); // Thiết lập giờ, phút, giây
+
+    // Định dạng thành chuỗi YYYY-MM-DD HH:MM:SS
+    const formattedString = `${formattedDate.getFullYear()}-${String(formattedDate.getMonth() + 1).padStart(2, '0')}-${String(formattedDate.getDate()).padStart(2, '0')} ${String(formattedDate.getHours()).padStart(2, '0')}:${String(formattedDate.getMinutes()).padStart(2, '0')}:00`;
+
+    return formattedString;
+}
+
+
+// Hàm chuyển đổi giờ và phút thành phút
+function convertToMinutes(hour, minute) {
+   return (parseInt(hour, 10) * 60) + parseInt(minute, 10);
+}
+
+// Hàm kiểm tra tính hợp lệ của dữ liệu
+function validateData(data) {
+   if (!data.flight_code || !data.dep_airport || !data.des_airport) {
+       alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
+       return false;
+   }
+   if (data.business_class_seat_size <= 0 || data.economy_class_seat_size <= 0) {
+       alert('Số lượng ghế phải lớn hơn 0!');
+       return false;
+   }
+   if (data.first_class_price <= 0 || data.second_class_price <= 0) {
+       alert('Giá vé phải lớn hơn 0!');
+       return false;
+   }
+   return true;
+}
+
+// Hàm reset form
+function resetForm() {
+   document.getElementById('scheduleForm').reset();
+}
+
+// Hàm gửi dữ liệu
+function confirm() {
+   // Lấy dữ liệu từ form
+   const flightCode = document.getElementById('flight_id').value;
+   const depAirport = document.getElementById('dep_airport').value;
+   const desAirport = document.getElementById('des_airport').value;
+   const firstClassSeats = document.getElementById('first_class_seats').value;
+   const firstClassPrice = document.getElementById('first_class_price').value;
+   const secondClassSeats = document.getElementById('second_class_seats').value;
+   const secondClassPrice = document.getElementById('second_class_price').value;
+   const ai1 = document.getElementById('imediateairport1').value || null;
+   const hour_stop_time_one = document.getElementById('flight_stop_hour_one').value || null;
+   const minute_stop_time_one = document.getElementById('flight_stop_minute_one').value || null;
+   const note1 = document.getElementById('note_1').value || null;
+   const ai2 = document.getElementById('imediateairport2').value || null;
+   const hour_stop_time_two = document.getElementById('flight_stop_hour_two').value || null;
+   const minute_stop_time_two = document.getElementById('flight_stop_minute_two').value || null;
+   const note2 = document.getElementById('note_2').value || null;
+
+   const date = document.getElementById('date').value;
+   const hour = document.getElementById('hour').value;
+   const minute = document.getElementById('minute').value;
+
+   const flight_hour = document.getElementById('flight_hour').value;
+   const flight_minute = document.getElementById('flight_minute').value;
+
+   // Kiểm tra dữ liệu
+   if (!checkTime(date, hour, minute)) {
+       return;
+   }
+
+   const formattedDateTime = formatDateTime(date, hour, minute);
+   const depTimeInMinutes = convertToMinutes(flight_hour, flight_minute);
+
+   // Kiểm tra và tính toán thời gian dừng nếu có
+   let flightStopTimeOneInMinutes = null;
+   if (hour_stop_time_one && minute_stop_time_one) {
+       flightStopTimeOneInMinutes = convertToMinutes(hour_stop_time_one, minute_stop_time_one);
+   }
+
+   let flightStopTimeTwoInMinutes = null;
+   if (hour_stop_time_two && minute_stop_time_two) {
+       flightStopTimeTwoInMinutes = convertToMinutes(hour_stop_time_two, minute_stop_time_two);
+   }
+
+   // Chuẩn bị dữ liệu gửi đi
+   const data = {
+       flight_code: flightCode,
+       dep_airport: depAirport,
+       des_airport: desAirport,
+       dep_time: formattedDateTime,
+       flight_time: depTimeInMinutes,
+       business_class_seat_size: firstClassSeats,
+       first_class_price: firstClassPrice,
+       economy_class_seat_size: secondClassSeats,
+       second_class_price: secondClassPrice,
+   };
+
+   if (ai1 && ai1.trim()) {
+       data.ai_1 = ai1;
+       data.stop_time_1 = flightStopTimeOneInMinutes;
+       data.note_1 = note1;
+   }
+
+   if (ai2 && ai2.trim()) {
+       data.ai_2 = ai2;
+       data.stop_time_2 = flightStopTimeTwoInMinutes;
+       data.note_2 = note2;
+   }
+
+   // Kiểm tra dữ liệu
+   if (!validateData(data)) {
+       return;
+   }
+
+   // Gửi dữ liệu qua API
+   fetch('/api/schedule', {
+       method: 'POST',
+       headers: {
+           'Content-Type': 'application/json',
+       },
+       body: JSON.stringify(data),
+   })
+   .then(response => {
+       if (!response.ok) {
+           return response.json().then(err => {
+               throw new Error(err.message || 'Có lỗi xảy ra từ server.');
+           });
+       }
+       return response.json();
+   })
+   .then(responseData => {
+       if (responseData.success) {
+           alert('Lưu dữ liệu thành công!');
+           resetForm(); // Làm trống form sau khi lưu thành công
+       } else {
+           alert(`Lưu dữ liệu thất bại: ${responseData.message || 'Lỗi không xác định.'}`);
+       }
+   })
+   .catch(error => {
+       console.error('Lỗi:', error);
+       alert(`Lưu dữ liệu thất bại: ${error.message}`);
+   });
+}
+
+
+
+</script>
+{% endblock %}
+

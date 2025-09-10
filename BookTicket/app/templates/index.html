@@ -1,0 +1,62 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+
+
+<div class="container my-5 col-md-8 col-lg-6 mx-auto">
+
+
+    <h2 class="text-center mb-7">TRA CỨU CHUYẾN BAY</h2>
+    <form method="get" action="/search">
+        <div class="row mb-3">
+            <!-- Departure -->
+            <div class="col-md-6">
+                <label for="departure" class="form-label">Từ</label>
+                <select class="form-select" id="departure" name="departure">
+                    <option value="" disabled selected>Chọn nơi đi</option>
+                    {% for p in provinces %}
+                    <option value="{{ p.name }}">{{ p.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="destination" class="form-label">Đến</label>
+                <select class="form-select" id="destination" name="destination">
+                    <option value="" disabled selected>Chọn nơi đến</option>
+                    {% for p in provinces %}
+                    <option value="{{ p.name }}">{{ p.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <!-- Departure Date -->
+            <div class="col-md-6">
+                <label for="departure_date" class="form-label">Ngày đi</label>
+                <input type="date" class="form-control" id="departure_date" name="departure_date">
+            </div>
+
+            <div class="col-md-6">
+                <label for="passenger" class="form-label">Số hành khách</label>
+                <input
+                        type="number"
+                        class="form-control"
+                        id="passenger"
+                        name="passenger"
+                        min="1"
+                        max="10"
+                        value="1"
+                        step="1">
+            </div>
+        </div>
+
+        <!-- Search Button -->
+        <button type="submit" class="btn btn-danger w-100">Tra cứu chuyến bay</button>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Title -->
+    <h1 class="text-center text-primary mt-4">HÓA ĐƠN THANH TOÁN</h1>
+
+    <!-- Flight Information -->
+    <div class="card mt-4 shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="fw-bold mb-0">Thông tin chuyến bay</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Đường bay:</strong> {{ flight.flight_route.dep_airport.province.name }} đến {{ flight.flight_route.des_airport.province.name }}</p>
+            <p><strong>Ngày khởi hành:</strong> {{ departure_date }}</p>
+            <p><strong>Giờ khởi hành:</strong> {{ departure_time }} - <strong>Giờ đến:</strong> {{ arrival_time }}</p>
+        </div>
+    </div>
+
+    <!-- Passenger Information -->
+    <div class="card mt-4 shadow">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="fw-bold mb-0">Thông tin hành khách</h4>
+        </div>
+        <div class="card-body">
+            {% for passenger in passengers %}
+            <div class="card mb-3 border-light shadow-sm">
+                <div class="card-body">
+                    <p class="mb-2"><strong>Họ và tên:</strong> {{ passenger.name }}</p>
+                    <p class="mb-0"><strong>Ghế:</strong> {{ passenger.seat_code }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Total Payment -->
+    <div class="card mt-4 shadow">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="fw-bold mb-0">Tổng cộng</h4>
+        </div>
+        <div class="card-body">
+            <p class="fs-5"><strong>Số tiền thanh toán:</strong> {{ "{:,.0f}".format(total).replace(',', '.') }} VND</p>
+        </div>
+    </div>
+
+    <!-- Payment Confirmation -->
+    <div class="text-center mt-4">
+        <p class="text-success fs-5">Cảm ơn bạn đã đặt vé với chúng tôi!</p>
+        <a href="/" class="btn btn-primary px-4 py-2">Quay lại trang chủ</a>
+    </div>
+</div>
+{% endblock %}

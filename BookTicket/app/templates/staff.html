@@ -1,0 +1,33 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center text-primary">Các chức năng của nhân viên</h1>
+        <!-- Hai chức năng chính -->
+        <div class="row justify-content-center mt-5">
+            <!-- Bán vé -->
+            <div class="col-md-4 text-center">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title text-success">Bán vé</h3>
+                        <p class="card-text">Quản lí bán vé cho các chuyến bay.</p>
+                        <a href="/" class="btn btn-success">Đi đến chức năng bán vé</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lập lịch chuyến bay -->
+            <div class="col-md-4 text-center">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title text-primary">Lập lịch chuyến bay</h3>
+                        <p class="card-text">Quản lí lịch các chuyến bay.</p>
+                        <a href="/api/schedule" class="btn btn-primary">Đi đến lập lịch các chuyến bay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

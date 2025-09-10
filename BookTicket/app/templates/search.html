@@ -1,0 +1,108 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+
+
+<div class="container-custom mt-4" style="max-width: 1800px;">
+    <div class="d-flex justify-content-center align-items-center">
+        <h3 class="fw-bold btn btn-danger text-center">{{ departure }} → {{ destination }}</h3>
+    </div>
+</div>
+
+
+<!-- Search Info and Filter Button -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <span>{{ departure_date }} | {{ passenger }} Hành khách</span>
+    <a href="/">
+        <button class="btn btn-danger">Thay đổi tìm kiếm</button>
+    </a>
+</div>
+
+<!-- Filter Section -->
+<div class="row mt-4">
+    <div>
+        {% if flights %}
+        {% for f in flights %}
+        <div class="container py-4">
+            <!-- Flight Card -->
+            <div class="row border p-3 mb-3">
+                <div class="col-md-3 text-center">
+                    <p class="mb-0">{{f.departure_time.strftime('%H:%M')}}</p>
+                    <p class="text-muted">{{f.departure_airport}}<br>{{departure}}</p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <p class="text-muted">Thời gian bay: {{f.flight_time}}</p>
+                    {% if not f.intermediate_airport_1 and not f.intermediate_airport_2 %}
+                    <p class="mb-0">Bay thẳng</p>
+                    {% else %}
+                    <p class="mb-0">Nối chuyến</p>
+
+                    {% if f.intermediate_airport_1 %}
+                    <p class="mb-0">Sân bay trung gian 1: {{ f.intermediate_airport_1 }}</p>
+                    <p class="text-muted">Thời gian dừng: {{ f.ia_stop_time_1 }} phút</p>
+                    {% endif %}
+
+                    {% if f.intermediate_airport_2 %}
+                    <p class="mb-0">Sân bay trung gian 2: {{ f.intermediate_airport_2 }}</p>
+                    <p class="text-muted">Thời gian dừng: {{ f.ia_stop_time_2 }} phút</p>
+                    {% endif %}
+                    {% endif %}
+
+                    <p>{{ f.flight_code }} Khai thác bởi {{ f.airline_name }}</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <p class="mb-0">{{f.arrival_time.strftime('%H:%M')}}</p>
+                    <p class="text-muted">{{f.destination_airport}}<br>{{destination}}</p>
+                </div>
+                <div class="col-md-12 mt-3">
+                    <div class="d-flex">
+                        <!-- Form dành riêng cho PHỔ THÔNG -->
+                        <form action="/booking" method="GET" class="flex-grow-1 text-center border-end">
+                            <p class="fw-bold text-primary">PHỔ THÔNG</p>
+                            <p>Từ <span
+                                    class="text-success">{{ "{:,.0f}".format(f.economy_price).replace(',', '.') }}</span>
+                                VNĐ</p>
+                            <p class="text-muted">Còn lại: {{ f.remaining_economy_seats }} ghế</p>
+                            <input type="hidden" name="passenger" value="{{ request.args.get('passenger') }}">
+                            <input type="hidden" name="flight_id" value="{{ f.flight_id }}">
+                            <input type="hidden" name="class" value="Economy_Class">
+                            <input type="hidden" name="departure_date" value="{{ departure_date }}">
+                            <input type="hidden" name="departure_time" value="{{ f.departure_time.strftime('%H:%M') }}">
+                            <input type="hidden" name="arrival_time" value="{{ f.arrival_time.strftime('%H:%M') }}">
+                            <input type="hidden" name="flight_time" value="{{ f.flight_time }}">
+                            <input type="hidden" name="price" value="{{ f.economy_price }}">
+                            <input type="hidden" name="flight_schedule_id" value="{{ f.flight_schedule_id }}">
+                            <button type="submit" class="btn btn-primary">Chọn</button>
+                        </form>
+
+                        <!-- Form dành riêng cho THƯƠNG GIA -->
+                        <form action="/booking" method="GET" class="flex-grow-1 text-center">
+                            <p class="fw-bold text-warning">THƯƠNG GIA</p>
+                            <p>Từ <span
+                                    class="text-success">{{ "{:,.0f}".format(f.business_price).replace(',', '.') }}</span>
+                                VNĐ</p>
+                            <p class="text-muted">Còn lại: {{ f.remaining_business_seats }} ghế</p>
+                            <input type="hidden" name="passenger" value="{{ request.args.get('passenger') }}">
+                            <input type="hidden" name="flight_id" value="{{ f.flight_id }}">
+                            <input type="hidden" name="class" value="Business_Class">
+                            <input type="hidden" name="departure_date" value="{{ departure_date }}">
+                            <input type="hidden" name="departure_time" value="{{ f.departure_time.strftime('%H:%M') }}">
+                            <input type="hidden" name="arrival_time" value="{{ f.arrival_time.strftime('%H:%M')  }}">
+                            <input type="hidden" name="flight_time" value="{{ f.flight_time }}">
+                            <input type="hidden" name="price" value="{{ f.business_price }}">
+                            <input type="hidden" name="flight_schedule_id" value="{{ f.flight_schedule_id }}">
+                            <button type="submit" class="btn btn-warning" >Chọn</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>Không tìm thấy chuyến bay nào phù hợp.</p>
+        {% endif %}
+    </div>
+
+
+</div>
+{% endblock %}

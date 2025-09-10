@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm" style="background-color: #6699ff; color: #FFFFFF;">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold" href="#" style="color: #FFFFFF;">
+            <i class="fas fa-shopping-cart me-2"></i>BOOKING WEBSITE
+        </a>
+
+        <!-- Toggler button for mobile view -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar items -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav me-auto">
+                <!-- Trang chủ link -->
+                {% if current_user|is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="/staff" style="color: #FFFFFF;">
+                        <i class="fas fa-home me-1"></i>Trang chủ
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="/" style="color: #FFFFFF;">
+                        <i class="fas fa-home me-1"></i>Trang chủ
+                    </a>
+                </li>
+                {% endif %}
+
+                <!-- Contact link -->
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="/contact" style="color: #FFFFFF;">
+                        <i class="fas fa-envelope me-1"></i>Liên hệ
+                    </a>
+                </li>
+            </ul>
+
+            <!-- User Authentication links -->
+            <ul class="navbar-nav">
+                {% if current_user.is_authenticated %}
+                <!-- Greeting user -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/" style="color: #FFFFFF;">
+                        <img src="{{ current_user.avatar }}" width="25" class="rounded-circle border border-primary me-1"/>
+                        Chào, {{ current_user.username }}
+                    </a>
+                </li>
+                <!-- Logout -->
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-light px-3 py-1 ms-2" href="/logout">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </a>
+                </li>
+                {% else %}
+                <!-- Login -->
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-light px-3 py-1" href="/login">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </a>
+                </li>
+                <!-- Register -->
+                <li class="nav-item ms-2">
+                    <a class="nav-link btn btn-outline-light px-3 py-1" href="/register">
+                        <i class="fas fa-user-plus"></i> Đăng ký
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

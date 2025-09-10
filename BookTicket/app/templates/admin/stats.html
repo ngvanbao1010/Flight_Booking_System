@@ -1,0 +1,125 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<h1 class="text-danger text-center mt-1">REPORTS</h1>
+
+<div class="row">
+    <div class="col-md-7 col-12">
+        <table class="table">
+            <tr>
+                <th>Id</th>
+                <th>Tên tuyến</th>
+                <th>Doanh thu</th>
+            </tr>
+            {% for s in stats %}
+            <tr>
+                <td> {{ s[0] }} </td>
+                <td> {{ s[2] }} -> {{ s[3] }} </td>
+                <td> {{ "{:,.0f}".format(s[1]).replace(',', '.') }} </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-md-5 col-12">
+         <canvas id="myChart"></canvas>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7 col-12">
+        <table class="table">
+            <tr>
+                <th>Tháng</th>
+                <th>Doanh thu</th>
+            </tr>
+            {% for s in stats_month %}
+            <tr>
+                <td> {{ s[0] }} </td>
+                <td> {{ "{:,.0f}".format(s[1]).replace(',', '.') }} </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-md-5 col-12">
+         <canvas id="myChart2"></canvas>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7 col-12">
+        <table class="table">
+            <tr>
+                <th>Năm</th>
+                <th>Doanh thu</th>
+            </tr>
+            {% for s in stats_year %}
+            <tr>
+                <td> {{ s[0] }} </td>
+                <td> {{ "{:,.0f}".format(s[1]).replace(',', '.') }} </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-md-5 col-12">
+         <canvas id="myChart3"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let data = [];
+    let labels = [];
+    let data2 = [];
+    let labels2 = []
+    let data3 = [];
+    let labels3 = []
+
+
+    {% for s in stats %}
+    data.push({{ s[1] }})
+    labels.push('{{ s[2] }} -> {{ s[3] }}')
+    {% endfor %}
+
+    {% for s in stats_month %}
+    data2.push({{ s[1] }})
+    labels2.push('{{ s[0] }}')
+    {% endfor %}
+
+    {% for s in stats_year %}
+    data3.push({{ s[1] }})
+    labels3.push('{{ s[0] }}')
+    {% endfor %}
+
+
+    function draw(ctx, data, labels) {
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: '# Doanh thu',
+                data: data,
+                borderWidth: 1,
+                backgroundColor: ["red", "green", "blue", "gold"]
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+    }
+
+    window.onload = function() {
+         const ctx = document.getElementById('myChart');
+         const ctx2 = document.getElementById('myChart2');
+         const ctx3 = document.getElementById('myChart3');
+         draw(ctx, data, labels);
+         draw(ctx2, data2, labels2);
+         draw(ctx3, data3, labels3);
+    }
+</script>
+{% endblock %}

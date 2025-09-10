@@ -1,0 +1,31 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<h1 class="text-center text-danger mt-1">ĐĂNG KÝ NGƯỜI DÙNG</h1>
+
+<form method="post" action="/register" enctype="multipart/form-data">
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" id="name" placeholder="Họ tên" name="name">
+        <label for="name">Họ tên</label>
+    </div>
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" id="username" placeholder="Họ tên" name="username">
+        <label for="username">Tên đăng nhập</label>
+    </div>
+    <div class="form-floating mb-3 mt-3">
+        <input type="password" class="form-control" id="password" placeholder="Mật khẩu" name="password">
+        <label for="password">Mật khẩu</label>
+    </div>
+    <div class="form-floating mb-3 mt-3">
+        <input type="password" class="form-control" id="confirm" placeholder="Xác nhận mật khẩu" name="confirm">
+        <label for="confirm">Xác nhận mật khẩu</label>
+    </div>
+    <div class="form-floating mb-3 mt-3">
+        <input type="file" accept=".png,.jpg" class="form-control" id="avatar" placeholder="Ảnh đại diện" name="avatar">
+        <label for="avatar">Ảnh đại diện</label>
+    </div>
+    <div class="form-floating mb-3 mt-3">
+        <button type="submit" class="btn btn-success">Đăng ký</button>
+    </div>
+</form>
+{% endblock %}

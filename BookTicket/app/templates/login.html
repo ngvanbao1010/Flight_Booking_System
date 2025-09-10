@@ -1,0 +1,44 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+
+<h1 class="text-center text-info mt-1">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
+
+<form method="post">
+    <input type="hidden" name="next" id="next" value="/">
+
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username" required>
+        <label for="username">Tên đăng nhập</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+        <input type="password" class="form-control" id="password" placeholder="Mật khẩu" name="password" required>
+        <label for="password">Mật khẩu</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+        <button type="submit" class="btn btn-success">Đăng nhập</button>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPath = window.location.pathname;
+        const bookingParams = localStorage.getItem('bookingParams');
+
+        // Kiểm tra xem có truy cập từ trang booking không
+        if (currentPath === '/login' && bookingParams) {
+            const params = JSON.parse(bookingParams);
+            const urlParams = new URLSearchParams(params).toString();
+            const next = `/booking?${urlParams}`;
+            document.getElementById('next').value = next;
+        } else {
+            // Xóa giá trị next nếu không phải từ booking
+            localStorage.removeItem('bookingParams');
+            document.getElementById('next').value = '/';
+        }
+    });
+</script>
+
+{% endblock %}

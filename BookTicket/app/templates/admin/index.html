@@ -1,0 +1,26 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+{% if current_user.is_authenticated %}
+<h1 class="text-info text-center">WELCOME TO THE ADMIN PAGE</h1>
+<h2 class="text-danger text-center"></h2>
+{% else %}
+<h1 class="text-info text-center">LOGIN TO ADMIN</h1>
+<form method="post" action="/login-admin">
+
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username">
+        <label for="username">Tên đăng nhập</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" id="password" placeholder="Mật khẩu" name="password">
+        <label for="password">Mật khẩu</label>
+    </div>
+
+     <div class="form-floating mb-3 mt-3">
+         <button type="submit" class="btn btn-success">Đăng nhập</button>
+    </div>
+</form>
+{% endif %}
+{% endblock %}

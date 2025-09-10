@@ -1,0 +1,198 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<h1 class="text-center text-primary mt-4">THÔNG TIN HÀNH KHÁCH VÀ THANH TOÁN</h1>
+
+{% if not current_user.is_authenticated %}
+
+<div class="card bg-danger text-white text-center fs-4 p-3">
+    <a href="/login?next={{ encoded_url  }}" class="text-decoration-underline text-white fw-bold">
+        BẠN CẦN ĐĂNG NHẬP ĐỂ MUA VÉ
+    </a>
+</div>
+{% endif %}
+<form action="/add_data" method="POST" id="paymentForm">
+    <input type="hidden" name="passenger_count" value="{{ passenger }}">
+    <input type="hidden" name="flight_id" value="{{ flight.id }}">
+    <input type="hidden" name="departure_date" value="{{ departure_date }}">
+    <input type="hidden" name="departure_time" value="{{ departure_time}}">
+    <input type="hidden" name="arrival_time" value="{{ arrival_time }}">
+    <input type="hidden" name="province_dep" value="{{ flight.flight_route.dep_airport.province.name }}">
+    <input type="hidden" name="province_des" value="{{ flight.flight_route.des_airport.province.name }}">
+    <input type="hidden" name="total" value="{{ total }}">
+    <input type="hidden" name="ticket_class" value="{{ ticket_class }}">
+    <input type="hidden" name="flight_schedule_id" value="{{ flight_schedule_id }}">
+    <!-- Chi tiết hành khách -->
+    {% for p in range(passenger) %}
+    <h4 class="mt-4">Chi tiết hành khách {{ p + 1 }}</h4>
+    <div class="row border p-3 mb-4">
+        <div class="col-md-6 mb-3">
+            <label for="passenger_name_{{ p }}">Họ và tên</label>
+            <input type="text" class="form-control" id="passenger_name_{{ p }}" name="passenger_name_{{ p }}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="passenger_id_{{ p }}">CMND/CCCD</label>
+            <input type="text" class="form-control" id="passenger_id_{{ p }}" name="passenger_id_{{ p }}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="passenger_birth_{{ p }}">Ngày sinh</label>
+            <input type="date" class="form-control" id="passenger_birth_{{ p }}" name="passenger_birth_{{ p }}"
+                   required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="passenger_gender_{{ p }}">Giới tính</label>
+            <select class="form-control" id="passenger_gender_{{ p }}" name="passenger_gender_{{ p }}" required>
+                <option value="Male">Nam</option>
+                <option value="Female">Nữ</option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="seat" class="form-label">Ghế khả dụng</label>
+            <select class="form-select" id="seat" name="seat_{{ p }}">
+                <option>Chọn ghế</option>
+                {% for seat in available_seats %}
+                <option value="{{ seat.seat_code }}">{{ seat.seat_code }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Tóm tắt chuyến bay -->
+    <h4 class="mt-4 text-danger fw-bold">Tóm tắt chuyến bay</h4>
+    <div class="row justify-content-center align-items-center border rounded p-4 mb-4 bg-light "
+         style="min-height: 200px;">
+        <div class="col-md-6 text-center">
+            <div class="d-flex justify-content-center align-items-center fs-4">
+                <span class="fw-bold text-uppercase text-primary">{{ flight.flight_route.dep_airport.province.name }}</span>
+                <span class="mx-3 text-secondary">&rarr;</span>
+                <span class="fw-bold text-uppercase text-primary">{{ flight.flight_route.des_airport.province.name }}</span>
+            </div>
+            <div class="mt-3 fs-5">
+                <p class="mb-0 text-muted">
+                    <i class="fa fa-calendar"></i>{{ departure_date }}
+                </p>
+                <p class="mb-0 text-muted">
+                    <i class="fa fa-clock"></i> {{ departure_time }} - {{arrival_time}}
+                </p>
+                <p class="mb-0 text-secondary">
+                    Thời gian: <strong>{{ flight_time }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chi tiết giá -->
+    <h4 class="mt-4">Chi tiết giá</h4>
+    <div class="border p-3 mb-4">
+        <div class="row">
+            <div class="col-md-8">
+                <strong>Đơn giá vé</strong>
+            </div>
+            <div class="col-md-4 text-right">
+                <span>{{ price }} VND</span>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-8">
+                <strong>Hạng vé</strong>
+            </div>
+            <div class="col-md-4 text-right">
+                <span>{{ ticket_class }}</span>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-8">
+                <strong>Số hành khách</strong>
+            </div>
+            <div class="col-md-4 text-right">
+                <span>{{ passenger }}</span>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-8">
+                <h5><strong>Tổng cộng</strong></h5>
+            </div>
+            <div class="col-md-4 text-right">
+                <h5><strong>{{ total }} VND</strong></h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút thanh toán -->
+    {% if current_user.is_authenticated %}
+    <div class="payment-method-container">
+        <h3>Chọn phương thức thanh toán</h3>
+
+        <div class="form-check">
+            <input type="radio" class="form-check-input" id="payment-momo" name="payment_method" value="momo"
+                   required>
+            <label class="form-check-label" for="payment-momo">
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Square.png"
+                     alt="MoMo" style="width: 50px;"> MoMo
+            </label>
+        </div>
+        <div class="form-check">
+            <input type="radio" class="form-check-input" id="payment-bank" name="payment_method" value="bank">
+            <label class="form-check-label" for="payment-bank">
+                <img src="https://static.vecteezy.com/system/resources/previews/000/352/309/original/bank-vector-icon.jpg"
+                     alt="Ngân hàng" style="width: 50px;"> Ngân hàng
+            </label>
+        </div>
+    </div>
+    <input type="hidden" id="payment-method-hidden" name="payment_method" value="">
+    {% if not current_user|is_staff %}
+    <div class="text-center mt-4">
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-danger btn-lg" id="confirmPaymentBtn" onclick="submitForm()">Mua Vé
+            </button>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center mt-4">
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-danger btn-lg" id="ticket" onclick="submitForm()">Thanh toán
+            </button>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+
+</form>
+<script>
+    if (window.location.pathname === '/booking') {
+       const params = new URLSearchParams(window.location.search);
+       localStorage.setItem('bookingParams', JSON.stringify(Object.fromEntries(params.entries())));
+   }
+
+    function submitForm() {
+        // Lấy giá trị của phương thức thanh toán được chọn
+        const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
+        const hiddenInput = document.getElementById('payment-method-hidden');
+
+        if (selectedMethod) {
+            // Gán giá trị vào input hidden dựa trên phương thức thanh toán
+            if (selectedMethod.value === 'momo') {
+                hiddenInput.value = 'momo';
+            } else if (selectedMethod.value === 'bank') {
+                hiddenInput.value = 'bank';
+            }
+            const userConfirmed = confirm("Bạn có chắc chắn muốn thanh toán?");
+            if (userConfirmed) {
+               document.getElementById('paymentForm').submit();
+       }
+        } else {
+            alert("Vui lòng chọn phương thức thanh toán!");
+        }
+    }
+
+
+
+
+</script>
+
+{% endblock %}
