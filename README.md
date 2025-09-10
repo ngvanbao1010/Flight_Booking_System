@@ -4,9 +4,7 @@ The **Flight Booking System** is a web-based application built with **Python (Fl
 It allows users to search for flights, book tickets, and manage reservations.  
 All flight information is stored in a MySQL database, with support for image uploads via **Cloudinary**.  
 
----
-
-## ✨ Features  
+## Features  
 
 - **User Registration & Authentication** – Create an account and securely log in to book flights.  
 - **Flight Search** – Search available flights by departure, destination, and travel date.  
@@ -14,7 +12,6 @@ All flight information is stored in a MySQL database, with support for image upl
 - **Booking Management** – View and manage previously booked tickets.  
 - **Cancellation** – Cancel an existing reservation when needed.  
 
----
 
 ## Requirements  
 
@@ -23,7 +20,6 @@ All flight information is stored in a MySQL database, with support for image upl
 - **MySQL Connector for Python** (`mysql-connector-python`)  
 - Other dependencies listed in `requirements.txt`  
 
----
 
 ## Installation  
 
@@ -42,7 +38,6 @@ All flight information is stored in a MySQL database, with support for image upl
    - Create a MySQL database named `flight`.  
    - Update the database credentials in `__init__.py`.  
 
----
 
 ## Configuration  
 
@@ -59,7 +54,6 @@ cloudinary.config(
 )
 ```
 
----
 
 ## Project Structure  
 
@@ -75,7 +69,6 @@ Flight_Booking_Python/
 │── requirements.txt  # Python dependencies  
 ```
 
----
 
 ## Notes  
 
