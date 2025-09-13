@@ -25,7 +25,7 @@ All flight information is stored in a MySQL database, with support for image upl
 
 1. **Clone the repository**  
    ```bash
-   git clone https://github.com/haothach/Flight_Booking_Python.git](https://github.com/ngvanbao1010/Flight_Booking_System.git
+   git clone https://github.com/ngvanbao1010/Flight_Booking_System.git
    cd Flight_Booking_System
    ```
 
